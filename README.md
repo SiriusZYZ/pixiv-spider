@@ -7,13 +7,14 @@
 <small>版本 :&emsp;0.1</small><br>
 <br>
 目录
-* [🎫依赖](#🎫依赖)
-* [📃简介](#📃简介)
-* [🍴使用方法](#🍴使用方法)
-* [⚠注意事项](#⚠注意事项)
-* [✏用户自定义](#✏用户自定义)
-* [🧾更新日志](#🧾更新日志)
-* [📈未来计划](#📈未来计划)
+* [🎫依赖](#依赖)
+* [📃简介](#简介)
+* [🍴使用方法](#使用方法)
+* [⚠注意事项](#注意事项)
+* [✏用户自定义](#用户自定义)
+* [🧾更新日志](#更新日志)
+* [📈未来计划](#未来计划)
+* [☕chat](#chat)
 
 
 ## 🎫依赖
@@ -24,7 +25,7 @@ Python 3.6.5 及以上
 ```python
 $ pip install pandas
 ```
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>  
+<div align="right"><a href ='#pixiv-spide'>🔝</a></div>  
 
 ##  📃简介 
 -----------------------
@@ -50,7 +51,7 @@ $ pip install pandas
 + 页面日期  
 &emsp;支持从 <kdb>2010-11-01</kdb>到现时（但不是当天）的页面爬取  
 <br> 
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>    
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>    
 
 ##  🍴使用方法 
 ----------------------- 
@@ -58,7 +59,7 @@ $ pip install pandas
 python digest.py
 ```
 <br> 
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>  
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 ##  ⚠注意事项   
 -----------------------   
@@ -66,7 +67,7 @@ python digest.py
 2.  将你的科学上网方式设置为全局模式 (global)
 3.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~ 
 <br>
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>   
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
 
 ## ✏用户自定义
 ---------------------
@@ -80,34 +81,36 @@ python digest.py
 | SEPARATE_FOLDER  | 是否独立存放每本漫画  |   bool   |  True  |
 | DATA_PATH        | 储存所有数据基文件夹  |  string  | 'data' |
 
-强烈建议: 令`DOWNLOAD_ALL`与`SEPARATE_FOLDER`设置的相同值
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>  
+强烈建议: 令`DOWNLOAD_ALL`与`SEPARATE_FOLDER`设置相同的值  
+
 <br>
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
+
+
 
 
 
 ## 🧾更新日志
 -------------
-<font color= RoyalBlue >2020-03-10 21:26 BJT</font>&emsp;发布了 `digest.py`  
-<font color= MediumSeaGreen >2020-03-10 22:02 BJT</font>&emsp;文件&nbsp;`digest.py` 现在支持手动修改自定义设置了 
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>   
-<br>
+➕2020-03-10 21:26 BJT&emsp;发布了 `digest.py`  
+🔧2020-03-10 22:02 BJT&emsp;`digest.py` 现在支持手动修改自定义设置了 
+  
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
+
 
 ## 📈未来计划 
 -----------
-[ ] 改成英语版本  
-[ ] 支持proxy   
-[ ] 支持登录?  
-[ ] 写好保存csv支持  
-[ ] 更好的Exception支持  
-<div align="right"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>  
++ 改成英语版本  
++ 支持proxy   
++ 支持登录?  
++ 写好保存csv支持  
++ 更好的Exception支持  
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 ## ☕chat
 -------------
-没什么经验，见笑了
+没什么经验，请多多批评
 
-
-<br><br>
-<div align="left"><a href ='#pixiv-spider%F0%9F%95%B7'>🔝</a></div>
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
  
 
