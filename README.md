@@ -25,7 +25,7 @@ Python 3.6.5 及以上
 ```python
 $ pip install pandas
 ```
-<div align="right"><a href ='#pixiv-spide'>🔝</a></div>  
+<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 ##  📃简介 
 -----------------------
