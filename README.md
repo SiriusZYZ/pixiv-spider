@@ -1,5 +1,5 @@
 # pixiv-spider🕷
-📣 &emsp;**English version is now under construction 2020-March-18**  
+📣 &emsp;**English version on progress 2020-March-18**  
 📣 &emsp;**对于中国大陆用户需要带全局路由的科学上网方式** 
 <br> <br> 
 <small>最近更新: 2020/03/18 10:00 pm</small><br>
@@ -9,7 +9,7 @@
 ##  简介 
 -----------------------
 适用于 Python3   
-**无登录**&nbsp;状态爬取pixiv榜单,并下载榜单中所有图片(包含漫画)  
+**无登录**&nbsp;状态爬取pixiv榜单,并多线程下载榜单中所有图片(包含漫画)  
 
 +  内容分类
     *  综合
@@ -42,7 +42,7 @@ python digest.py
 -----------------------   
 1. 请先将&emsp; **digest.py** &emsp;放在一个&nbsp;**独立的文件夹**&nbsp;中运行，并赋予其运行权限
 2. 将你的科学上网方式设置为全局模式(global)
-3. 因为没有写登录所以没有办法爬🔞, 各位同学模式选男性将就下
+3. 因为没有写登录所以没有办法爬🔞 <table><tr><td bgcolor=black>各位同学模式选男性将就下</td></tr></table>
 <br>
 
 ## 用户自定义
