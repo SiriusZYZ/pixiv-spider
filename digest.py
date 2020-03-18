@@ -1,6 +1,14 @@
 import os,re,html,time,concurrent
 import urllib.request as req
 
+#update in 202003/18 22:01 (BJT)
+#config
+RESOLVE_THREADS = 10            #解析地址线程数，过多导致电脑变卡，太少解析变慢
+DOWNLOAD_THREADS = 15           #下载图片线程数，同上
+DOWNLOAD_ALL = True   #False    #对漫画下载全部或者仅封面（多于一页的插画视为漫画）
+SEPARATE_FOLDER = True #False   #以文件夹保存漫画,推荐与DOWNLOAD_ALL设置相同值
+DATA_PATH = 'data'              #保存所有爬取数据的文件夹
+#
 
 '''
 #modify the scripts if you want to save the result of Dig() as .csv:
@@ -450,13 +458,7 @@ def ask_url():
 
 if __name__ == "__main__":
 
-    #config
-    RESOLVE_THREADS = 10            #解析地址线程数，过多导致电脑变卡，太少解析变慢
-    DOWNLOAD_THREADS = 15           #下载图片线程数，同上
-    DOWNLOAD_ALL = True   #False    #对漫画下载全部或者仅封面（多于一页的插画视为漫画）
-    SEPARATE_FOLDER = True #False   #以文件夹保存漫画,推荐与DOWNLOAD_ALL设置相同值
-    DATA_PATH = 'data'              #保存所有爬取数据的文件夹
-    #
+
 
     #customize url
     mode,content,date = ask_url()
