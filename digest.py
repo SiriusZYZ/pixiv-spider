@@ -1,13 +1,13 @@
 import os,re,html,time,concurrent
 import urllib.request as req
 
-#update in 202003/18 22:01 (BJT)
 #config
 RESOLVE_THREADS = 10            #解析地址线程数，过多导致电脑变卡，太少解析变慢
 DOWNLOAD_THREADS = 15           #下载图片线程数，同上
 DOWNLOAD_ALL = True   #False    #对漫画下载全部或者仅封面（多于一页的插画视为漫画）
 SEPARATE_FOLDER = True #False   #以文件夹保存漫画,推荐与DOWNLOAD_ALL设置相同值
 DATA_PATH = 'data'              #保存所有爬取数据的文件夹
+DEFAULT_PROXY = 1080           #默认socks代理端口
 #
 
 '''
@@ -83,20 +83,23 @@ def Fetch_html(url,store_path,folder_name):
         #print('[info] fetch html: html headers:',r.headers )
     except ValueError as e:
         print('[Error] fetch html: ',e )
+        return -1
     except req.HTTPError as e:
         print('[Error] fetch html: ',e )
+        return -1
     except req.URLError as e:
         print('[Error] fetch html: ',e)
-        print('[info] fetch html: check if you could reach www.pixiv.net using web browser')
-        print('[info] fetch html: if you could not, check your vpn connection first')
-        print('[info] fetch html: if you could, please set your vpn mode as global and try again' )
+        print('[info] fetch html: check your Internet connection or proxy setting ')
+        return -1
+        
+
     #write to local file
     file = open(current_html, 'wb') 
     try:
         file.write(r.read())
         print('[info] fetch html: html saved as '+current_html )
-    except IOError as e:
-        print('[Error] fetch html: '+ e)
+    except :
+        print('[Error] fetch html: Exception occured when trying to write .html'+ e)
     file.close()
 
     
@@ -456,9 +459,34 @@ def ask_url():
     return mode,content,date
     
 
-if __name__ == "__main__":
+def demo():
+    
+    '''
+    demo
+    '''
 
+    #setup socks
+    p = input('使用Socks代理?(注意:大陆用户不使用代理无法连接pixiv)[y/n]')
+    if p == 'y' or p == 'Y':
+        try:
+            import socks
+            import socket
+            print('在你的科学上网中查找代理端口(ss)/监听端口(v2ray)')
+            proxy = input('键入Socks代理端口(默认 %d ):' % DEFAULT_PROXY)
+            try:
+                proxy = int(proxy)
+            except:
+                proxy = DEFAULT_PROXY
+                print('设置为 %d ' % DEFAULT_PROXY)
+            
+            socks.set_default_proxy(socks.SOCKS5, '127.0.0.1', proxy)
+            socket.socket = socks.socksocket
 
+        except:
+            print('请先安装PySocks cmd:[ pip install PySocks]')
+            
+            
+    
 
     #customize url
     mode,content,date = ask_url()
@@ -474,7 +502,10 @@ if __name__ == "__main__":
     #fetch html
     folder_date = (date if date else time.strftime("%Y%m%d", time.localtime()))
     folder_name = '-'.join((folder_date,content if content else '',mode))
-    WORK_PATH, HTML_PATH = Fetch_html(URL,DATA_PATH,folder_name)
+    result = Fetch_html(URL,DATA_PATH,folder_name)
+    #if Fatal error
+    if result == -1: return 
+    else:   WORK_PATH, HTML_PATH = result
     
     #match html labels,save as [{},]
     rank_dict = Dig(HTML_PATH)
@@ -487,6 +518,12 @@ if __name__ == "__main__":
 
     #info
     print('[info] main: finish (%s)' % ns_time(time.time_ns()-main_s))
+
+
+if __name__ == "__main__":
+    
+    demo()
+
     
 
     
