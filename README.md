@@ -2,7 +2,7 @@
 📣 &emsp;**Working on engish version**  
 📣 &emsp;**对于中国大陆用户需要带Socks的科学上网方式** 
 <br> <br> 
-<small>README最后更新: 2020/03/19 GMT+8 10:29 </small><br>
+<small>README最后更新: 2020/03/19 GMT+8 17:05 </small><br>
 <small>by siriuslalalala</small><br>
 <small>版本 :&emsp;0.1.1</small><br>
 <br>
@@ -71,7 +71,8 @@ python digest.py
 1.  请先将&emsp; **digest.py** &emsp;放在一个&nbsp;**独立的文件夹**&nbsp;中运行，并赋予其运行权限。
 2.  在proxy设置中，如果你使用shadowsocks,端口可能为1080，如果你使用V2rayN，端口可能为10808。
 3.  直接使用全局路由时请不要设置代理。
-4.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~ 
+4.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~
+5.  有同名覆写问题，正在维修
 <br>
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
 
@@ -115,7 +116,8 @@ python digest.py
 ✅ 支持Socks代理  
 + 支持登录?  
 + 写好保存csv支持  
-+ 更好的Exception支持  
++ 更好的Exception支持 
++ 🐞[b000001]防止同名覆写
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 ## ☕chat
