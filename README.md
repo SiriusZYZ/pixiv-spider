@@ -1,29 +1,34 @@
 # pixiv-spider🕷
-📣 &emsp;**Working on engish version 2020-March-18**  
-📣 &emsp;**对于中国大陆用户需要带全局路由的科学上网方式** 
+📣 &emsp;**Working on engish version**  
+📣 &emsp;**对于中国大陆用户需要带Socks的科学上网方式** 
 <br> <br> 
-<small>最近更新: 2020/03/18 10:00 pm</small><br>
+<small>README最后更新: 2020/03/19 GMT+8 10:29 </small><br>
 <small>by siriuslalalala</small><br>
-<small>版本 :&emsp;0.1</small><br>
+<small>版本 :&emsp;0.1.1</small><br>
 <br>
 目录
-* [🎫依赖](#依赖)
+* [🔐依赖](#依赖)
 * [📃简介](#简介)
 * [🍴使用方法](#使用方法)
-* [⚠注意事项](#注意事项)
+* [❗注意事项](#注意事项)
 * [✏用户自定义](#用户自定义)
 * [🧾更新日志](#更新日志)
 * [📈未来计划](#未来计划)
 * [☕chat](#chat)
 
 
-## 🎫依赖
+## 🔐依赖
 -----------------------
 Python 3.6.5 及以上  
-在改装&nbsp;`digest.py`&nbsp;令其可以保存爬取结果至本地`csv`时需要pandas：  
-安装pandas
-```python
-$ pip install pandas
+1.  使用Socks代理时需要 PySocks  
+安装 PySocks:
+```
+ pip install PySocks
+```
+1. 在改装&nbsp;`digest.py`&nbsp;令其可以保存爬取结果至本地`csv`时需要pandas：  
+安装pandas:
+```
+ pip install pandas
 ```
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
@@ -61,11 +66,12 @@ python digest.py
 <br> 
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
-##  ⚠注意事项   
+##  ❗注意事项   
 -----------------------   
-1.  请先将&emsp; **digest.py** &emsp;放在一个&nbsp;**独立的文件夹**&nbsp;中运行，并赋予其运行权限
-2.  将你的科学上网方式设置为全局模式 (global)
-3.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~ 
+1.  请先将&emsp; **digest.py** &emsp;放在一个&nbsp;**独立的文件夹**&nbsp;中运行，并赋予其运行权限。
+2.  在proxy设置中，如果你使用shadowsocks,端口可能为1080，如果你使用V2rayN，端口可能为10808。
+3.  直接使用全局路由时请不要设置代理。
+4.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~ 
 <br>
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
 
@@ -80,8 +86,9 @@ python digest.py
 | DOWNLOAD_ALL     | 下载漫画所有页/仅封面 |   bool   |  True  |
 | SEPARATE_FOLDER  | 是否独立存放每本漫画  |   bool   |  True  |
 | DATA_PATH        | 储存所有数据基文件夹  |  string  | 'data' |
+|DEFAULT_PROXY     | 默认Socks代理端口     |    int   |  1080  |
 
-强烈建议: 令`DOWNLOAD_ALL`与`SEPARATE_FOLDER`设置相同的值  
+强烈建议: 令`DOWNLOAD_ALL`与`SEPARATE_FOLDER`设置相同的值 
 
 <br>
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
@@ -92,16 +99,20 @@ python digest.py
 
 ## 🧾更新日志
 -------------
-➕2020-03-10 21:26 BJT&emsp;发布了 `digest.py`  
-🔧2020-03-10 22:02 BJT&emsp;`digest.py` 现在支持手动修改自定义设置了 
+> <big>v 0.1.0</big>   
+> ➕2020-03-18 GMT+8 21:26 &emsp;发布了 `digest.py`  
+> 🔧2020-03-18 GMT+8 22:02 &emsp;`digest.py` 现在支持手动修改自定义设置了  
+    
+> <big>v 0.1.1</big>  
+>🔧2020-03-19 GMT+8 10:01 &emsp;`digest.py` 现在支持Socks代理端口的设置了
   
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 
 ## 📈未来计划 
 -----------
-+ 改成英语版本  
-+ 支持proxy   
++ 改成英语版本   
+✅ 支持Socks代理  
 + 支持登录?  
 + 写好保存csv支持  
 + 更好的Exception支持  
