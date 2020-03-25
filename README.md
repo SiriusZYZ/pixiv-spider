@@ -2,9 +2,9 @@
 📣 &emsp;**Working on engish version**  
 📣 &emsp;**对于中国大陆用户需要带Socks的科学上网方式** 
 <br> <br> 
-<small>README最后更新: 2020/03/19 GMT+8 17:05 </small><br>
+<small>README最后更新: 2020/03/25 GMT+8 17:05 </small><br>
 <small>by siriuslalalala</small><br>
-<small>版本 :&emsp;0.1.1</small><br>
+<small>版本 :&emsp;0.1.2</small><br>
 <br>
 目录
 * [🔐依赖](#依赖)
@@ -105,7 +105,10 @@ python digest.py
 > 🔧2020-03-18 GMT+8 22:02 &emsp;`digest.py` 现在支持手动修改自定义设置了  
     
 > <big>v 0.1.1</big>  
->🔧2020-03-19 GMT+8 10:01 &emsp;`digest.py` 现在支持Socks代理端口的设置了
+>🔧2020-03-19 GMT+8 10:01 &emsp;`digest.py` 现在支持Socks代理端口的设置了  
+
+> <big>v 0.1.2</big>  
+>🔧2020-03-25 GMT+8 17:00 &emsp;`digest.py` 修复了控制台下执行时可能出现的AttributeError
   
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
@@ -118,6 +121,7 @@ python digest.py
 + 写好保存csv支持  
 + 更好的Exception支持 
 + 🐞[b000001]防止同名覆写
++ 爬取画师所有作品功能
 <div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
 ## ☕chat
