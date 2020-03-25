@@ -1,4 +1,4 @@
-import os,re,html,time,concurrent
+import os,re,html,time,concurrent.futures
 import urllib.request as req
 
 #config
