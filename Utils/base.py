@@ -25,7 +25,7 @@ class baseSession:
         @wraps(func)
         def wrapper(self, *args, **kwargs):
             ret = func(self, *args, **kwargs)
-            if self._log_enable and ret: self._log += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+f"{time.time()%1:.3f} " + ret + "\n"
+            if self._log_enable and ret: self._log += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+f"{time.time()%1:.3f} "[1:] + ret + "\n"
             return ret
         return wrapper
 
