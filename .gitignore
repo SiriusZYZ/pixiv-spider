@@ -3,6 +3,5 @@
 *.jpg
 *.png
 *.json
+*.pyc
 
-ref/overwrite_bugfix.ipynb
-ref/test2.ipynb
