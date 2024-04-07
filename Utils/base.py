@@ -116,7 +116,7 @@ class baseSession:
         '''
         
         if referer:
-            self._session.headers['refere'] = referer
+            self._session.headers['referer'] = referer
         
         self.message(f"[Action] Resolving {url}")
 
@@ -125,17 +125,15 @@ class baseSession:
             t = time.time()
             try:
                 response = self._session.get(url)
-            except (requests.exception.ConnectTimeout, requests.exception.ProxyError, requests.exception.SSLError) as E:
+            except (requests.exceptions.ConnectTimeout, requests.exceptions.ProxyError, requests.exceptions.SSLError) as E:
                 self.message(f"[Error] {E}: when resolving {url}")
             except:
                 self.message(f"[Error] Unexpected Error occured when resolving {url}")
             else:
                 t = int(1000 * (time.time() - t))
                 self.message("[Action] {:} resolved | Response Status: {:} | {:}ms".format(url, response.status_code, t))
-                if response.status_code not in (200, 201, 302, 304):
-                    continue
-                else: break
-
+                if response.ok:
+                    break
             times += 1
             self.message(f"[Action] Resolve {url} | at {times} retry")
 
