@@ -1,11 +1,15 @@
-from typing import List, Optional
+import time
 import requests
+from typing import List, Optional
 from .base import baseSession
 
 class rankingSession(baseSession):
     '''
     This class is a subclass of baseSession. It is designed to resolve pixiv's (pixiv.net/ranking) and get illustration items.
     '''
+    valid_modes = ("", "daily", "weekly", "monthly", "rookie", "original", "daily_ai", "male", "female")
+    valid_contents = ("", "illust", "ugoira", "manga")
+
     def __init__(self):
         super().__init__()
         self.res = list()
@@ -27,9 +31,9 @@ class rankingSession(baseSession):
         This function will get ranking page from pixiv.net/ranking, resolve the page to a list of illustration items and append them to the result list.
         Parameters:
             mode : str
-                Mode of ranking. Can be "daily", "weekly", "monthly", "rookie".
+                Mode of ranking. see rankingSession.valid_modes.
             content : str
-                Content of ranking. Can be "illust", "ugoira", "manga".
+                Content of ranking. see rankingSession.valid_contents.
             date : str
                 Date of ranking. Format: "20210101".
             page : int
@@ -37,13 +41,22 @@ class rankingSession(baseSession):
         Returns:
             str : The result of this action.
         '''
-        self.message("[Action] Getting Ranking Page")
+        self.message(f"[Action] Getting Ranking Page, mode={mode if mode else '/'}, content={content if content else '/'}, date={date if date else '/'}, page={page if page else '/'}")
         try:
-            assert mode in ("", "daily", "weekly", "monthly", "rookie")
-            assert content in ("", "illust", "ugoira", "manga")
-            assert not page or int(page) > 0
-        except AssertionError:
-            return "[Error] Invalid Parameters. Abort."
+            if not mode in self.valid_modes: raise ValueError("Invalid mode")
+            if not content in self.valid_contents: raise ValueError("Invalid content")
+            if date:
+                try:
+                    ts_date = time.strptime(date, "%Y%m%d")
+                except ValueError:
+                    raise ValueError("Invalid date, check format [YYYYMMDD]")
+                if ts_date > time.localtime() or ts_date < time.strptime("20070913", "%Y%m%d"): 
+                    raise ValueError("Invalid date range, date should be in range [20070913, now]")
+                if mode == "daily_ai" and ts_date < time.strptime("20221031", "%Y%m%d"): 
+                    raise ValueError("Invalid date range for ai generate content, date should be in range [20221031, now]")
+            if page and int(page) < 0: raise ValueError("Invalid page")
+        except ValueError as e:
+            return f"[Error] {e}, Abort."
         
         base_url = r"https://www.pixiv.net/ranking.php?"
         suffix = []

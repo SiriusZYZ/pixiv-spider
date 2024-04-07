@@ -118,7 +118,7 @@ class baseSession:
         if referer:
             self._session.headers['referer'] = referer
         
-        self.message(f"[Action] Resolving {url}")
+        self.message(f"[Action] Opening {url}")
 
         times = 0
         response = None
