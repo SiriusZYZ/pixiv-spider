@@ -41,7 +41,7 @@ class rankingSession(baseSession):
         try:
             assert mode in ("", "daily", "weekly", "monthly", "rookie")
             assert content in ("", "illust", "ugoira", "manga")
-            assert page is None or page > 0
+            assert not page or int(page) > 0
         except AssertionError:
             return "[Error] Invalid Parameters. Abort."
         

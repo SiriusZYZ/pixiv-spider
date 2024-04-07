@@ -121,6 +121,7 @@ class baseSession:
         self.message(f"[Action] Resolving {url}")
 
         times = 0
+        response = None
         while times < self._retry:
             t = time.time()
             try:
@@ -137,7 +138,7 @@ class baseSession:
             times += 1
             self.message(f"[Action] Resolve {url} | at {times} retry")
 
-        if response: return response
+        return response
 
 
 if __name__ == "__main__":

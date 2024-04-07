@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
 
-from Utils import baseSession
+from pixivSpider import baseSession
 
 bs = baseSession()
 bs.set_proxies(7890)

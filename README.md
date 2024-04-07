@@ -1,133 +1,160 @@
-# pixiv-spider🕷
-📣 &emsp;**Working on engish version**  
-📣 &emsp;**对于中国大陆用户需要带Socks的科学上网方式** 
-<br> <br> 
-<small>README最后更新: 2020/03/25 GMT+8 17:05 </small><br>
-<small>by siriuslalalala</small><br>
-<small>版本 :&emsp;0.1.2</small><br>
-<br>
-目录
-* [🔐依赖](#依赖)
-* [📃简介](#简介)
-* [🍴使用方法](#使用方法)
-* [❗注意事项](#注意事项)
-* [✏用户自定义](#用户自定义)
-* [🧾更新日志](#更新日志)
-* [📈未来计划](#未来计划)
-* [☕chat](#chat)
 
+[English Intro](<#pixiv-spider [en]>)  
+[简体中文简介](<#pixiv-spider [zh-cn]>)  
+[changelog](<#changelog>)  
+[future plan](<#future-plan>)  
+Contact me at `sirius.zhouyz@gmail.com`, your feedbacks will be appreciated.
 
-## 🔐依赖
------------------------
-Python 3.6.5 及以上  
-1.  使用Socks代理时需要 PySocks  
-安装 PySocks:
+# pixiv-spider [en]
+Fetch contents from pixiv.  
+This module is still **under development**. Supported features includes:
+- fetch the title, `illustid`, date, tags, author and other metadata of the listed artworks in [trending page](https://www.pixiv.net/ranking.php). 
+- given the `illustid` of an artwork, fetch the art content url (original size).
+
+>**Notice:**  
+This module may be refactored in the future. The names of defined objects and methods may change.
+
+## Dependencies
+This module use `requests`. Nothing third-party else (Currently).  
+Use the following command in your CLI to install `requests`.
+```shell
+pip install requests
 ```
- pip install PySocks
-```
-1. 在改装&nbsp;`digest.py`&nbsp;令其可以保存爬取结果至本地`csv`时需要pandas：  
-安装pandas:
-```
- pip install pandas
-```
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
-##  📃简介 
------------------------
-适用于 Python3   
-**无登录**&nbsp;状态爬取pixiv榜单,并多线程下载榜单中所有图片(包含多页漫画)  
+## How to Use
 
-+  内容分类
-    *  综合
-    *  插画
-    *  漫画  
-<br>  
-
-+  模式分类  
-&emsp;⚠某些模式可能在特定内容下不可用
-    *  每日
-    *  每周
-    *  每月  
-    *  新人
-    *  原创
-    *  受男性欢迎
-    *  受女性欢迎
-
-+ 页面日期  
-&emsp;支持从 <kdb>2010-11-01</kdb>到现时（但不是当天）的页面爬取  
-<br> 
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>    
-
-##  🍴使用方法 
------------------------ 
+1. import the module from `./pixivSpider`. You can rename this module in your project later if you want.
 ```python
-python digest.py
+import pixivSpider
 ```
-<br> 
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
 
-##  ❗注意事项   
------------------------   
-1.  请先将&emsp; **digest.py** &emsp;放在一个&nbsp;**独立的文件夹**&nbsp;中运行，并赋予其运行权限。
-2.  在proxy设置中，如果你使用shadowsocks,端口可能为1080，如果你使用V2rayN，端口可能为10808。
-3.  直接使用全局路由时请不要设置代理。
-4.  因为 **没有写登录** 所以没有办法爬🔞 ~~各位选模式时选男性将就下~~
-5.  有同名覆写问题，正在维修
-<br>
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
+2. Use `pixivSpider.rankingSession` to fetch stuff from the [trending page](https://www.pixiv.net/ranking.php).
+```python
+rs = pixivSpider.rankingSession()
+rs.set_proxies(7890)    # if needed. apply for both http and https.
 
-## ✏用户自定义
----------------------
-修改于 `digest.py` 中位于代码头的全局变量：
+valid_modes = ("", "daily", "weekly", "monthly", "rookie")
+valid_contents = ("", "illust", "ugoira", "manga")
+rs.get_ranking_page(
+    mode = "",          # Optional parameter.
+    content = "illust", # Optional parameter.
+    date = "20240101",  # Optional parameter. format (YearMonthDay)
+    page = 1            # Optional parameter. each page has 50 artworks, pageNum starts from 1.
+)   # see help(pixivSpider.rankingSession) for more info
+rs.get_ranking_page(
+    mode = "",          
+    content = "illust", 
+    date = "20240101",  
+    page = 2
+)
 
-| 变量             | 用途                  | 变量类型 | 初始值 |
-| :--------------- | :-------------------- | :------: | :----: |
-| RESOLVE_THREAD   | 解析url线程数         |   int    |   10   |
-| DOWNLOAD_THREADS | 下载图片线程数        |   int    |   15   |
-| DOWNLOAD_ALL     | 下载漫画所有页/仅封面 |   bool   |  True  |
-| SEPARATE_FOLDER  | 是否独立存放每本漫画  |   bool   |  True  |
-| DATA_PATH        | 储存所有数据基文件夹  |  string  | 'data' |
-|DEFAULT_PROXY     | 默认Socks代理端口     |    int   |  1080  |
+print(rs.log)           # show log
+for idx, item in enumerate(rs.resolve()):   # .resolve() return the fetched results in a list of item dict.
+    print(idx, item)
 
-强烈建议: 令`DOWNLOAD_ALL`与`SEPARATE_FOLDER`设置相同的值 
+rs.reset()              # reset proxy setting and clear all the result.
+```
+3. Use `pixivSpider.illustpageSession` to fetch the url of original-size images from a given `illustid`
+```python
+ips = pixivSpider.illustpageSession()
+ips.set_proxies(7890)
 
-<br>
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
+ips.get_illust_page(
+    illust_id = 84421525    # https://www.pixiv.net/artworks/{illustid}
+)
+ips.get_illust_page(
+    illust_id = 93341155
+)
 
+for idx, item in enumerate(ips.resolve()):   # .resolve() return the fetched results in a list of item dict.
+    print(idx, item)
+ips.reset()     # reset proxy setting and clear all the result.
+``` 
 
+# pixiv-spider [zh-cn]
+抓取 pixiv 内容   
+目前模块仍在**开发中**, 支持的功能如下:
+- 抓取[排行榜](https://www.pixiv.net/ranking.php)中艺术作品的标题, `illustid`, 日期, 标签, 作者等元数据
+- 抓取指定`illustid`艺术作品的原图url
 
+>**注意:**  
+模块可能会进行重构, 各定义的对象及方法名也可能因此改变.
 
+## 依赖
+目前只用到了`requests` 第三方模块.  
+使用以下命令行命令安装:
+```shell
+pip install requests
+```
+## 使用方式
 
-## 🧾更新日志
--------------
-> <big>v 0.1.0</big>   
-> ➕2020-03-18 GMT+8 21:26 &emsp;发布了 `digest.py`  
-> 🔧2020-03-18 GMT+8 22:02 &emsp;`digest.py` 现在支持手动修改自定义设置了  
-    
-> <big>v 0.1.1</big>  
->🔧2020-03-19 GMT+8 10:01 &emsp;`digest.py` 现在支持Socks代理端口的设置了  
+1. 从 `./pixivSpider`中导入模块. 如果需要可以在自己的项目中更改此模块名
+```python
+import pixivSpider
+```
 
-> <big>v 0.1.2</big>  
->🔧2020-03-25 GMT+8 17:00 &emsp;`digest.py` 修复了控制台下执行时可能出现的AttributeError
+2. 使用 `pixivSpider.rankingSession` 获取[排行榜](https://www.pixiv.net/ranking.php)中的内容.
+```python
+rs = pixivSpider.rankingSession()
+rs.set_proxies(7890)    # 设置proxy, 面向http和https
+
+valid_modes = ("", "daily", "weekly", "monthly", "rookie")
+valid_contents = ("", "illust", "ugoira", "manga")
+rs.get_ranking_page(
+    mode = "",          # 可选参数.
+    content = "illust", # 可选参数.
+    date = "20240101",  # 可选参数. 格式为 (年月日)
+    page = 1            # 可选参数. 每页50个作品, 页面数从1开始.
+)   # 更多信息请 help(pixivSpider.rankingSession)
+rs.get_ranking_page(
+    mode = "",          
+    content = "illust", 
+    date = "20240101",  
+    page = 2
+)
+
+print(rs.log)           # 打印log
+for idx, item in enumerate(rs.resolve()):   # .resolve() 以列表形式返回爬取到的所有结果, 列表中每一个dict对应一个列出的作品
+    print(idx, item)
+
+rs.reset()              # 重置proxy设置并清空结果
+```
+3. 使用 `pixivSpider.illustpageSession` 来获取 `illustid` 作品的所有原始大小图片url
+```python
+ips = pixivSpider.illustpageSession()
+ips.set_proxies(7890)
+
+ips.get_illust_page(
+    illust_id = 84421525    # https://www.pixiv.net/artworks/{illustid}
+)
+ips.get_illust_page(
+    illust_id = 93341155
+)
+
+for idx, item in enumerate(ips.resolve()):   # .resolve() 以列表形式返回爬取到的所有结果, 列表中每一个dict对应一个执行过的每一个illust_id
+    print(idx, item)
+ips.reset()             # 重置proxy设置并清空结果
+``` 
+
+# Changelog
+> **0.2.0** &emsp; 2024 Apr 7  
+> - change this repo development from scrips-oriented to module-oriented.
+> - api changes. add `rankingSession`, `illustpageSession` to support different features.
+> - add a demo.
+> - `README.md` support English now.
+> - archived `digest.py`
+
+> 0.1.2 &emsp; 2020 Mar 25   
+> - fix possible AttributeError when using CLI.
   
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
+> 0.1.1 &emsp; 2020 Mar 19   
+> - `digest.py` support socks now. 
 
+> 0.1.0 &emsp; 2020 Mar 18   
+> - repo base.
 
-## 📈未来计划 
------------
-+ 改成英语版本   
-✅ 支持Socks代理  
-+ 支持登录?  
-+ 写好保存csv支持  
-+ 更好的Exception支持 
-+ 🐞[b000001]防止同名覆写
-+ 爬取画师所有作品功能
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div>  
-
-## ☕chat
--------------
-没什么经验，请多多批评
-
-<div align="right"><a href ='#pixiv-spider'>🔝</a></div> 
- 
-
+# Future Plan
+- support new trending sub-pages for original, ai-generate content, popular in male/female.
+- add a downloader.
+- add resolvers for [a single artist](https://www.pixiv.net/users/11) and [a single tag](https://www.pixiv.net/tags/%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88).
+- better logs
