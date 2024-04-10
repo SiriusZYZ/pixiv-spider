@@ -3,6 +3,7 @@ import time
 import requests
 from functools import wraps
 from typing import Optional, List
+from .logger import Logger
 
 class baseSession:
     '''
@@ -11,48 +12,33 @@ class baseSession:
     '''
     def __init__(self):
         
-        self._log = ""
-        self._log_enable = True
+        self.logger = Logger
         self._session = requests.Session()
         self._retry = 3
-        self.message("[Action] Initialize baseSession")
-        self.reset()
+        self.logger.debug("%s initialized", self)
+        self._session.headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.103 Safari/537.36'}
+        self._session.proxies = dict()
 
-    def write_log(func):
-        '''
-        Decorator for log writing.
-        '''
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            ret = func(self, *args, **kwargs)
-            if self._log_enable and ret: self._log += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+f"{time.time()%1:.3f} "[1:] + ret + "\n"
-            return ret
-        return wrapper
-
-    @write_log
-    def message(self, msg: str) -> str:
-        '''
-        Send message and write log.
-        '''
-        return msg
-    
-    @write_log
-    def set_proxies(self, port : int) -> str:
+    def set_proxies(self, port : int) -> None:
         '''
         Set proxies explicitly.
         Parameters:
             port : int
                 Port number for proxies.
         '''
-        assert port > 0
+        if port < 0 or port > 65536 or type(port) != int:
+            self.logger.error("Invalid port number: %s", port)
+            return False
+
         self._session.proxies = {
             "http": "http://127.0.0.1:" + str(port),
             "https": "http://127.0.0.1:" + str(port)
         }
-        return "[Config] Set proxies port = " + str(port)
+        self.logger.debug("Proxies set to %s", self._session.proxies)
 
-    @write_log
-    def reset(self) -> str:
+        return
+
+    def reset(self) -> None:
         '''
         Reset Session. This will clear all settings including headers, proxies and retry times.
         '''
@@ -60,7 +46,9 @@ class baseSession:
         self._session.headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.103 Safari/537.36'}
         self._session.proxies = dict()
         self._retry = 3
-        return "[Config] Reset"
+        self.logger.info("Session reset.")
+        self.logger.debug("%s Reset\nHeaders: %s \nProxies: %s \nRetry: %s", self, self._session.headers, self._session.proxies, self._retry)
+        return
 
     @property
     def retry(self) -> int:
@@ -70,40 +58,25 @@ class baseSession:
     def retry(self, retry_times : int):
         assert retry_times > 0
         self._retry = retry_times
-    
-    @property
-    def log(self) -> str:
-        return self._log[:]
-    
-    @property
-    def log_is_enable(self):
-        return self._log_enable
+        self.logger.debug("Retry times set to %d", self._retry)
 
-    @write_log
-    def enable_log(self):
-        self._log_enable = True
-        return "[Config] Enable Log"
-
-    @write_log
-    def disable_log(self):
-        self._log_enable = False
-        return "[Config] Disable Log"
-
-    @write_log
-    def test_connection(self, url : str = "https://www.pixiv.net") -> str:
+    def test_connection(self, url : str = "https://www.pixiv.net") -> bool:
         '''
         Test connection to an url. default as pixiv main page.
         Parameters:
             url : str
                 The url to test connection.
         '''
-        self.message(f"[Action] Testing Connection on {url}")
+        self.logger.debug("Testing Connection on %s", url)
         rp = self.open(url)
+        rtt = rp.elapsed.microseconds/1000
 
         if rp and rp.ok:
-            return f"[Action] Test Connection on {url}, Response Status: {rp.status_code}"
-        else: 
-            return "[Error] Connection Failed."
+            self.logger.info("Connection Succeed, Status Code: %s, RTT: %d", rp.status_code, rtt)
+            return True
+        else:
+            self.logger.error("Connection failed.")
+            return False
 
     def open(self, url : str, referer : Optional[str] = "") -> Optional[requests.models.Response]:
         '''
@@ -118,8 +91,6 @@ class baseSession:
         if referer:
             self._session.headers['referer'] = referer
         
-        self.message(f"[Action] Opening {url}")
-
         times = 0
         response = None
         while times < self._retry:
@@ -127,18 +98,43 @@ class baseSession:
             try:
                 response = self._session.get(url)
             except (requests.exceptions.ConnectTimeout, requests.exceptions.ProxyError, requests.exceptions.SSLError) as E:
-                self.message(f"[Error] {E}: when resolving {url}")
-            except:
-                self.message(f"[Error] Unexpected Error occured when resolving {url}")
+                self.logger.error("Network error occurred when resolving %s", url)
+                self.logger.debug(
+                    "\nCall: @%s.open() -> Url: %s\nError: %s\nAttempt times: %d\nHeaders: %sProxies: %s", 
+                    self, url,
+                    E, 
+                    times+1, 
+                    self._session.headers,
+                    self._session.proxies)
+            except Exception as err:
+                self.logger.error(f"Unexpected %s occurred when resolving %s", err, url)
+                self.logger.debug(
+                    "\nCall: @%s.open() -> Url: %s\nError: %s\nAttempt times: %d\nHeaders: %sProxies: %s", 
+                    self, url,
+                    E, 
+                    times+1, 
+                    self._session.headers,
+                    self._session.proxies)
             else:
-                t = int(1000 * (time.time() - t))
-                self.message("[Action] {:} resolved | Response Status: {:} | {:}ms".format(url, response.status_code, t))
+                rtt = response.elapsed.microseconds/1000
                 if response.ok:
-                    break
+                    self.logger.debug(
+                        "\nCall: @%s.open() -> Url: %s\nStatus Code %s, RTT: %s", 
+                        self, url,
+                        response.status_code, rtt)
+                    return response
+                else:
+                    self.logger.error("Connection failed.")
+                    self.logger.error(
+                        "\nCall: @%s.open() -> Url: %s\nStatus Code %s, RTT: %s", 
+                        self, url,
+                        response.status_code, rtt)
             times += 1
-            self.message(f"[Action] Resolve {url} | at {times} retry")
+            self.logger.info("retry %d", times)
 
-        return response
+
+        self.logger.error("Failed to open %s after %d attempts.", url, self._retry)
+        return None
 
 
 if __name__ == "__main__":
