@@ -104,6 +104,19 @@ class illustPageSession(baseSession):
     '''
     This is a subclass of baseSession. It is designed to resolve the urls of illustration items based on a illustid.
     '''
+
+    details_enable_fields = (
+        'illustId', 
+        'illustTitle', 
+        'createDate', 
+        'uploadDate', 
+        'pageCount', 
+        'bookmarkCount', 
+        'likeCount', 
+        'commentCount', 
+        'responseCount', 
+        'viewCount')
+
     def __init__(self):
         super().__init__()
         self.res = list()
@@ -119,27 +132,68 @@ class illustPageSession(baseSession):
 
     def get_illust_page(self, illust_id : int) -> None:
         '''
-        This function resolve the urls of illustration items based on a illustid.
+        This function resolve the urls of illustration items based on a illust_id.
+        Note:
+            This function need to call pixivSpider.baseSession.open() twice to get all the needed information.
+            It first open a url which contains the illust details, then it open another url which contains the actual images urls of all artwork pages.
         Parameters:
             illust_id : int
                 The illust id of the illustration.
         Returns:
             str : The result of this action.
         '''
-        url = "https://www.pixiv.net/ajax/illust/{:}/pages?lang=en".format(illust_id)
+        url = "https://www.pixiv.net/ajax/illust/{:}".format(illust_id)
 
         self.logger.info("getting illust page, illust_id=%s", illust_id)
 
-        r = self.open(url, referer = "https://www.pixiv.net/en/artworks/{:}".format(illust_id))
+        # details
+        r = self.open(
+            url = f"https://www.pixiv.net/ajax/illust/{illust_id}", 
+            referer = "https://www.pixiv.net/artworks/{:}".format(illust_id))
         if not r or not r.ok:
-            self.logger.error("Failed to get illust page.")
+            self.logger.error("Failed to get illust details.")
             return
-        self.logger.info("illust page opened.")
+        self.logger.info("illust details received.")
 
-        illust_page_dict = {"illust_id" : illust_id, "resolved_pics": list()}
-        for pics in r.json()["body"]:
-            illust_page_dict['resolved_pics'].append(pics["urls"]["original"])
-        
+        illust_details = r.json()["body"]
+        illust_page_dict = dict()
+
+        for key in self.details_enable_fields:
+            try:
+                illust_page_dict[key] = illust_details[key]
+            except KeyError:
+                illust_page_dict[key] = None
+                self.debug("illust page %d details field %s not found, pass.", illust_id, key)
+                continue
+
+        try:
+            illust_page_dict["tags"] = list()
+            for tag_item in illust_details["tags"]["tags"]:
+                illust_page_dict["tags"].append(tag_item["tag"])
+                continue
+        except KeyError:
+            illust_page_dict["tags"] = None
+            self.debug("illust page %d tags not found, pass.", illust_id)
+
+
+        # pics urls
+        illust_page_dict["resolved_pics"] = list()
+
+        r = self.open(
+            url = f"https://www.pixiv.net/ajax/illust/{illust_id}/pages?lang=en", 
+            referer = f"https://www.pixiv.net/artworks/{illust_id}")
+        if not r or not r.ok:
+            self.logger.error("Failed to get illust page urls.")
+            return
+        self.logger.info("illust pages urls received.")
+        illust_pages = r.json()["body"]
+        for idx, page in enumerate(illust_pages):
+            try:
+                illust_page_dict["resolved_pics"].append(page["urls"]["original"])
+            except KeyError:
+                self.logger.error("illust page %d page %d urls not found, pass.", illust_id, idx)
+                continue
+
         self.res.append(illust_page_dict)
         self.logger.info("illust page resolved, %d items found.", len(illust_page_dict['resolved_pics']))
         return
@@ -152,3 +206,5 @@ class illustPageSession(baseSession):
         '''
         self.logger.debug("%s.resolve(), %d items found.", self, len(self.res))
         return self.res
+
+
