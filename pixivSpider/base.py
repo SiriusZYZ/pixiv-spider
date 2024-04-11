@@ -97,38 +97,28 @@ class baseSession:
             t = time.time()
             try:
                 response = self._session.get(url)
-            except (requests.exceptions.ConnectTimeout, requests.exceptions.ProxyError, requests.exceptions.SSLError) as E:
-                self.logger.error("Network error occurred when resolving %s", url)
+            except (requests.exceptions.ConnectTimeout, requests.exceptions.ProxyError, requests.exceptions.SSLError) as err:
+                self.logger.error("%s occurred when resolving %s", err, url)
                 self.logger.debug(
-                    "\nCall: @%s.open() -> Url: %s\nError: %s\nAttempt times: %d\nHeaders: %sProxies: %s", 
-                    self, url,
-                    E, 
-                    times+1, 
-                    self._session.headers,
-                    self._session.proxies)
+                    "Call: @%s.open() -> Url: %s, Error: %s, Attempt times: %d, Headers: %s, Proxies: %s", 
+                    self, url, err, times+1, self._session.headers, self._session.proxies)
             except Exception as err:
-                self.logger.error(f"Unexpected %s occurred when resolving %s", err, url)
+                self.logger.error("Unexpected %s occurred when resolving %s", err, url)
                 self.logger.debug(
-                    "\nCall: @%s.open() -> Url: %s\nError: %s\nAttempt times: %d\nHeaders: %sProxies: %s", 
-                    self, url,
-                    E, 
-                    times+1, 
-                    self._session.headers,
-                    self._session.proxies)
+                    "Call: @%s.open() -> Url: %s, Error: %s, Attempt times: %d, Headers: %s, Proxies: %s",
+                    self, url, err, times+1, self._session.headers, self._session.proxies)
             else:
                 rtt = response.elapsed.microseconds/1000
                 if response.ok:
                     self.logger.debug(
-                        "\nCall: @%s.open() -> Url: %s\nStatus Code %s, RTT: %s", 
-                        self, url,
-                        response.status_code, rtt)
+                        "Call: @%s.open() -> Url: %s, Status Code %s, RTT: %s",
+                        self, url, response.status_code, rtt)
                     return response
                 else:
                     self.logger.error("Connection failed.")
-                    self.logger.error(
-                        "\nCall: @%s.open() -> Url: %s\nStatus Code %s, RTT: %s", 
-                        self, url,
-                        response.status_code, rtt)
+                    self.logger.debug(
+                        "Call: @%s.open() -> Url: %s, Status Code %s, RTT: %s", 
+                        self, url, response.status_code, rtt)
             times += 1
             self.logger.info("retry %d", times)
 

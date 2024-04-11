@@ -61,7 +61,7 @@ class pLogger():
         self.info("file logging enable at [%s]", path)
     
     def log(self, *args, **kwargs):
-        self.logger.log(logging.INFO, *args, **kwargs)
+        self.logger.log(*args, **kwargs)
 
     def debug(self, *args, **kwargs):
         self.logger.debug(*args, **kwargs)
@@ -79,7 +79,7 @@ class pLogger():
         self.logger.critical(*args, **kwargs)
     
 
-Logger = pLogger("pixivSpider", logging.DEBUG)
+Logger = pLogger(__name__, logging.DEBUG)
 
 
 if __name__ == "__main__":
