@@ -40,6 +40,9 @@ class pLogger():
             self.formatter)
     
     def set_stream_level(self, level: str):
+        '''
+        Set the level of the stream handler.
+        '''
         if level.upper() not in str_level_dict.keys():
             self.error("Invalid level: %s", level)
             return
@@ -47,12 +50,26 @@ class pLogger():
         self.debug("stream level set to %s", level_str_dict[str_level_dict[level.upper()]])
 
     def silent_stream(self):
+        '''
+        only critical messages will be printed in the console.
+        '''
         self.set_stream_level("critical")
     
     def verbose_stream(self):
+        '''
+        all messages will be printed in the console.
+        '''
         self.set_stream_level("debug")
     
     def set_file_handler(self, path: str, level: int = logging.DEBUG):
+        '''
+        set file handler for logging.
+        Parameters:
+            path : str
+                The path of the log file.
+            level : int
+                The level of the log file.
+        '''
         self.debug("set file handler, path: %s, level: %s", path, level_str_dict[level])
         self.file_handler = logging.FileHandler(path)
         self.file_handler.setLevel(level)
@@ -79,7 +96,7 @@ class pLogger():
         self.logger.critical(*args, **kwargs)
     
 
-Logger = pLogger(__name__, logging.DEBUG)
+Logger = pLogger(__name__, logging.DEBUG) # This is the logger object for the whole package, and it's singleton.
 
 
 if __name__ == "__main__":
