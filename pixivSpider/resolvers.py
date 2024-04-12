@@ -2,6 +2,7 @@ import time
 import requests
 from typing import List, Optional
 from .base import baseSession
+from .parsers import *
 
 class rankingSession(baseSession):
     '''
@@ -208,3 +209,110 @@ class illustPageSession(baseSession):
         return self.res
 
 
+class userPageSession(baseSession):
+    '''
+    This is a subclass of baseSession. It is designed to resolve the artwork id based and author details based on a author_id.
+    '''
+    details_enable_fields = (
+        "userId",
+        "name",
+        "premium",
+        "acceptRequest",
+        "following",
+        "mypixivCount",
+        "comment",
+        "webpage",
+        "social",
+        "region",
+        "age",
+        "birthDay",
+        "gender",
+        "job",
+        "workplace",
+        "official"
+    )
+    artwork_enable_fields = ('illusts', 'manga', 'novels')
+
+
+    def __init__(self):
+        super().__init__()
+        self.res = list()
+    
+    def reset(self) -> None:
+        '''
+        This will clear all settings including headers, proxies and retry times, and reset the result list.
+        '''
+        super().reset()
+        self.res = list()
+        self.logger.debug("result list reset, cleared %d items.", len(self.res))
+        return
+    
+    def get_user_page(self, user_id : int) -> None:
+        '''
+        This function resolve the urls of illustration items based on a author_id.
+        Parameters:
+            author_id : int
+                The author id of the author.
+        Returns:
+            str : The result of this action.
+        '''
+        self.logger.info("getting user page, user_id=%s", user_id)
+
+        # details
+        r = self.open(
+            url = f"https://www.pixiv.net/users/{user_id}", 
+            referer = "https://www.pixiv.net")
+        if not r or not r.ok:
+            self.logger.error("Failed to get user details.")
+            return
+        self.logger.info("user page received.")
+        try:
+            x = userPageParser()
+            x.feed(r.text)
+            self.logger.debug("parser: %s", x.res)
+            user_details = x.res[str(user_id)]
+        except Exception as e:
+            self.logger.error("Failed to parse user page: %s", e)
+            return
+        
+        user_page_dict = dict()
+
+        for key in self.details_enable_fields:
+            try:
+                user_page_dict[key] = user_details[key]
+            except KeyError:
+                user_page_dict[key] = None
+                self.logger.debug("user page %d details field %s not found, pass.", user_id, key)
+                continue
+        
+        r = self.open(
+            url = f"https://www.pixiv.net/ajax/user/{user_id}/profile/all", 
+            referer = f"https://www.pixiv.net/users/{user_id}")
+        if not r or not r.ok:
+            self.logger.error("Failed to get user artworks.")
+            return
+        self.logger.info("user artworks received.")
+
+        artworks = r.json()["body"]
+        for key in self.artwork_enable_fields:
+            try:
+                
+                user_page_dict[key] = list(artworks[key].keys()) if type(artworks[key]) == dict else artworks[key]
+
+            except KeyError:
+                user_page_dict[key] = None
+                self.debug("user page %d artworks field %s not found, pass.", user_id, key)
+                continue
+        
+        self.res.append(user_page_dict)
+
+        return
+    
+    def resolve(self) -> list:
+        '''
+        This function returns the result list.
+        Returns:
+            list : The result list. Each item is a dict of illustration item.
+        '''
+        self.logger.debug("%s.resolve(), %d items found.", self, len(self.res))
+        return self.res
